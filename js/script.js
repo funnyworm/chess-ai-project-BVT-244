@@ -305,7 +305,7 @@ function minimax(game, depth, alpha, beta, isMaximizingPlayer, sum, color) {
     }
 }
 
-
+//checks game status and updates the display
 function checkStatus(color) {
     if (game.in_checkmate()) {
         $('#status').html(`<b>Checkmate!</b> Oops, <b>${color}</b> lost.`);
@@ -380,7 +380,7 @@ function getBestMove(game, color, currSum) {
     return [bestMove, bestMoveValue];
 }
 
-//Make the best legal move
+//Makes the best legal move
 function makeBestMove(color) {
     if (color === 'b') {
         var move = getBestMove(game, color, globalSum)[0];
@@ -445,7 +445,7 @@ function reset() {
     $('#advantageColor').text('Neither side');
     $('#advantageNumber').text(globalSum);
 
-    // Clear current captured pieces
+    //clear current captured pieces
     document.getElementById('whiteCaptured').innerHTML = '';
     document.getElementById('blackCaptured').innerHTML = '';
 
@@ -512,6 +512,8 @@ $('#compVsCompBtn').on('click', function () {
 $('#resetBtn').on('click', function () {
     reset();
 });
+
+//toggle dark mode styling
 $('#darkModeToggleBtn').on('click', function () {
     document.body.classList.toggle('dark-mode');
 })
@@ -520,20 +522,22 @@ $('#applyBtn').on('click', function () {
     opponentType = document.getElementById('opponentType').value;
 
     reset();
-    // Update board orientation based on player color
+
+    // update board orientation based on player color
     board.orientation(playerColor === 'w' ? 'white' : 'black');
-    board.position('start'); // set board to the starting position
+    board.position('start');
 
     // If playing against the computer and player chooses black, let the computer make the first move as white
     if (opponentType === 'computer' && playerColor === 'b') {
         window.setTimeout(function () {
-            makeBestMove('w'); // Computer makes the first move as white
+            makeBestMove('w');
         }, 250);
     }
 })
 
 var undo_stack = [];
 
+//undo the last move made
 function undo() {
     var move = game.undo();
     undo_stack.push(move);
@@ -564,6 +568,7 @@ $('#undoBtn').on('click', function () {
     }
 });
 
+//redo a move that has ben undone
 function redo() {
     game.move(undo_stack.pop());
     board.position(game.fen());
@@ -592,7 +597,7 @@ function showHint() {
     var showHint = document.getElementById('showHint');
     $board.find('.' + squareClass).removeClass('highlight-hint');
 
-    //show hint (best move for white)
+    //show hint for playerColor
     if (showHint.checked) {
         if (playerColor === 'w') {
             var move = getBestMove(game, 'w', -globalSum)[0];
@@ -605,6 +610,8 @@ function showHint() {
     }
 }
 
+//turns a square on the board grey
+//used when showing potential moves
 function greySquare (square) {
     var $square = $('#myBoard .square-' + square);
 
@@ -658,7 +665,7 @@ function onDrop (source, target) {
 
     $board.find('.square-' + squareToHighlight).addClass('highlight-' + colorToHighlight);
 
-    // If playing against the computer and it's the computer's turn, make the best move
+    // If playing against the computer, make the best move
     if (opponentType === 'computer') {
         
         window.setTimeout(function () {
@@ -722,6 +729,7 @@ function updateCapturedPieces() {
             img.src = `img/chesspieces/wikipedia/${color}${piece.toUpperCase()}.png`;
             img.className = 'captured-piece';
 
+            //pieces captured are opposite of your own color
             if (color === 'b') {
                 whiteCaptured.push(img);
             } else {
